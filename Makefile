@@ -38,7 +38,7 @@ all: $(NAME)
 		$(CC) $(CFLAGS) -c $< -o $@
 
 $(NAME): $(OBJ)
-		$(AR) $(NAME) $(OBJ)
+		$(AR) $(NAME) $?
 
 bonus:
 		@make all OBJ="$(OBJ) $(OBJB)"

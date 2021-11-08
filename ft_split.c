@@ -12,21 +12,15 @@
 
 #include "libft.h"
 
-static void	cleaner(char **arr, int wordsToClear)
+static void	*clearArr(char ***arr)
 {
-	while (wordsToClear > 0)
-		free(arr[wordsToClear--]);
-	free(arr);
-}
+	int	i;
 
-static char	**createZero(char **arr, int isClearing, int wordsToClear)
-{
-	if (isClearing == 1)
-		cleaner(arr, wordsToClear);
-	arr = ft_calloc(1, sizeof(char *));
-	if (arr)
-		arr[0] = NULL;
-	return (arr);
+	i = 0;
+	while (*arr[i] != NULL)
+		free(*arr[i++]);
+	free(*arr);
+	return (NULL);
 }
 
 static int	countWords(char const *s, char c)
@@ -34,16 +28,11 @@ static int	countWords(char const *s, char c)
 	int	i;
 	int	count;
 
-	i = 1;
+	i = 0;
 	count = 0;
-	while (s[i] != 0)
-	{
-		if (s[i] == c && s[i - 1] != c)
+	while (++i && s[i - 1] != 0)
+		if ((s[i] == c || s[i] == 0) && s[i - 1] != c)
 			count++;
-		i++;
-	}
-	if ((s[i] == c || s[i] == 0) && s[i - 1] != c)
-		count++;
 	return (count);
 }
 
@@ -60,18 +49,16 @@ static char	**arrFill(int wordsCount, char const *s, char c)
 	arr = ft_calloc(wordsCount + 1, sizeof(char *));
 	if (!arr)
 		return (NULL);
-	while (s[i])
+	while (s[i - 1])
 	{
-		if (s[i] == c && s[i - 1] != c)
+		if ((s[i] == c || s[i] == 0) && s[i - 1] != c)
 			arr[j++] = ft_substr(s, start, i - start);
 		if (s[i] != c && s[i - 1] == c)
 			start = i;
 		if (j > 0 && !arr[j - 1])
-			return (createZero(arr, 1, j - 2));
+			return (clearArr(&arr));
 		i++;
 	}
-	if ((s[i] == c || s[i] == 0) && s[i - 1] != c)
-		arr[j] = ft_substr(s, start, i - start);
 	return (arr);
 }
 
@@ -81,13 +68,16 @@ char	**ft_split(char const *s, char c)
 	char	**arr;
 
 	if (!s || ft_strlen(s) == 0)
-		return (createZero(NULL, 0, 0));
+	{
+		arr = (char **)ft_calloc(1, sizeof(char *));
+		if (arr)
+			arr[0] = NULL;
+		return (arr);
+	}
 	wordsCount = countWords(s, c);
 	arr = arrFill(wordsCount, s, c);
 	if (!arr)
-		return (createZero(NULL, 0, 0));
-	if (!arr[wordsCount - 1])
-		return (createZero(arr, 1, wordsCount - 2));
+		return (NULL);
 	arr[wordsCount] = NULL;
 	return (arr);
 }

@@ -13,7 +13,7 @@
 #include "libft.h"
 #include <stdio.h>
 
-int	checker(unsigned char a, char const *set)
+static int	checker(unsigned char a, char const *set)
 {
 	while (*set)
 		if (*set++ == a)
@@ -38,7 +38,9 @@ char	*ft_strtrim(char const *s1, char const *set)
 		else
 			++s1;
 	}
-	target = ft_strlen(buf) - 1;
+	target = 0;
+	if (ft_strlen(buf) != 0)
+		target = ft_strlen(buf) - 1;
 	while (target > 0 && checker(buf[target], set))
 		target--;
 	return (ft_substr(buf, 0, ++target));
